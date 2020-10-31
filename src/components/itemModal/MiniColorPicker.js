@@ -28,10 +28,10 @@ export default function MiniColorPicker({ hexCode, onChange }) {
                 marginLeft: "8px",
                 display: "flex",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
               };
-            }
-          }
+            },
+          },
         }}
       >
         <Block width="24px" height="24px" backgroundColor={hexCode} />

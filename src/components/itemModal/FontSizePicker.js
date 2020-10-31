@@ -13,7 +13,7 @@ const FONT_SIZE_OPTIONS = [
   { label: 18, value: 18 },
   { label: 24, value: 24 },
   { label: 30, value: 30 },
-  { label: 36, value: 36 }
+  { label: 36, value: 36 },
 ];
 
 export default function FontSizePicker({ onChange, value }) {
@@ -28,8 +28,8 @@ export default function FontSizePicker({ onChange, value }) {
       onChange={onChange}
       overrides={{
         Root: {
-          style: () => ({ width: "80px" })
-        }
+          style: () => ({ width: "80px" }),
+        },
       }}
       clearable={false}
     />
