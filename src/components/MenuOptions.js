@@ -10,21 +10,38 @@ import { StatefulPopover } from "baseui/popover";
 import Plus from "baseui/icon/plus";
 
 // Constants
-import { ACTIONS } from "../constants";
+import { ACTIONS, MODES } from "../constants";
 
 function MenuOptions({ onAction }) {
-  const onItemSelect = useCallback(() => {
-    onAction({ type: ACTIONS.OPEN_ADD_ITEM_MODAL });
-  }, [onAction]);
+  const onItemSelect = useCallback(
+    (item) => {
+      if (item.mode === MODES.CREATE) {
+        onAction({ type: ACTIONS.OPEN_ADD_ITEM_MODAL });
+      } else {
+        onAction({
+          type: ACTIONS.CHANGE_MODE,
+          payload: { mode: item.mode },
+        });
+      }
+    },
+    [onAction]
+  );
 
   return (
     <StatefulPopover
-      content={
+      content={({ close }) => (
         <StatefulMenu
-          items={[{ label: "Add Item" }]}
-          onItemSelect={onItemSelect}
+          items={[
+            { label: "Add Item", mode: MODES.CREATE },
+            { label: "Edit Items", mode: MODES.EDIT },
+            { label: "Remove Item", mode: MODES.DELETE },
+          ]}
+          onItemSelect={({ item }) => {
+            onItemSelect(item);
+            close();
+          }}
         />
-      }
+      )}
       placement="bottomRight"
     >
       <Button
@@ -35,9 +52,9 @@ function MenuOptions({ onAction }) {
             style: () => ({
               position: "absolute",
               top: "0px",
-              right: "0px"
-            })
-          }
+              right: "0px",
+            }),
+          },
         }}
       >
         <Plus size={20} />

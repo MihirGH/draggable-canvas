@@ -5,11 +5,11 @@ import { Block } from "baseui/block";
 
 import Item from "./Item";
 
-export default function Canvas({ items, onAction }) {
+export default function Canvas({ items, onAction, mode }) {
   return (
     <Block height="100%" width="100%">
       {items.map((item) => (
-        <Item key={item.id} item={item} onAction={onAction} />
+        <Item key={item.id} item={item} onAction={onAction} mode={mode} />
       ))}
     </Block>
   );

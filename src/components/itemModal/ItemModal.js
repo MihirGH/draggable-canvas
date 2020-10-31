@@ -10,7 +10,7 @@ import {
   ModalFooter,
   ModalButton,
   SIZE,
-  ROLE
+  ROLE,
 } from "baseui/modal";
 import { KIND as BUTTON_KIND } from "baseui/button";
 
@@ -20,12 +20,12 @@ import MiniColorPicker from "./MiniColorPicker";
 
 // Constants
 import { ACTIONS as MODAL_ACTIONS } from "./constants";
-import { ACTIONS } from "../../constants";
+import { ACTIONS, MODES } from "../../constants";
 
 const INITIAL_STATE = {
-  fontSize: [{ label: 12, value: 12 }],
+  fontSize: [{ label: 16, value: 16 }],
   textContent: "",
-  textColor: "#000000"
+  textColor: "#000000",
 };
 
 const itemModalReducer = (state, action) => {
@@ -43,13 +43,19 @@ const itemModalReducer = (state, action) => {
   }
 };
 
-export default function ItemModal({ isOpen, onAction }) {
-  const [state, dispatch] = useReducer(itemModalReducer, INITIAL_STATE);
+export default function ItemModal({ isOpen, onAction, initialItem, mode }) {
+  const [state, dispatch] = useReducer(itemModalReducer, {}, () => ({
+    ...INITIAL_STATE,
+    ...initialItem,
+    fontSize: initialItem.fontSize
+      ? [{ label: initialItem.fontSize, value: initialItem.fontSize }]
+      : INITIAL_STATE.fontSize,
+  }));
 
   const onTextColorChange = useCallback(({ hex }) => {
     dispatch({
       type: MODAL_ACTIONS.UPDATE_TEXT_COLOR,
-      payload: { textColor: hex }
+      payload: { textColor: hex },
     });
   }, []);
 
@@ -58,19 +64,20 @@ export default function ItemModal({ isOpen, onAction }) {
     onAction({ type: ACTIONS.CLOSE_ADD_ITEM_MODAL });
   }, [onAction]);
 
-  const onAddItem = useCallback(() => {
+  const handleSubmit = useCallback(() => {
     onAction({
-      type: ACTIONS.ADD_ITEM,
+      type: mode === MODES.CREATE ? ACTIONS.ADD_ITEM : ACTIONS.UPDATE_ITEM,
       payload: {
+        id: initialItem.id,
         item: {
           textContent: state.textContent,
           fontSize: state.fontSize[0].value,
-          textColor: state.textColor
-        }
-      }
+          textColor: state.textColor,
+        },
+      },
     });
     onModalClose();
-  }, [state, onAction, onModalClose]);
+  }, [state, onAction, onModalClose, initialItem, mode]);
 
   return (
     <Modal
@@ -94,9 +101,9 @@ export default function ItemModal({ isOpen, onAction }) {
             Block: {
               style: () => ({
                 "box-sizing": "border-box",
-                border: "1px solid black"
-              })
-            }
+                border: "1px solid black",
+              }),
+            },
           }}
         >
           <Block
@@ -106,9 +113,9 @@ export default function ItemModal({ isOpen, onAction }) {
             overrides={{
               Block: {
                 style: () => ({
-                  "border-bottom": "1px solid black"
-                })
-              }
+                  "border-bottom": "1px solid black",
+                }),
+              },
             }}
           >
             <FontSizePicker
@@ -116,7 +123,7 @@ export default function ItemModal({ isOpen, onAction }) {
               onChange={({ value }) => {
                 dispatch({
                   type: MODAL_ACTIONS.UPDATE_FONT_SIZE,
-                  payload: { fontSize: value }
+                  payload: { fontSize: value },
                 });
               }}
             />
@@ -144,16 +151,16 @@ export default function ItemModal({ isOpen, onAction }) {
                     color: `${state.textColor}`,
                     resize: "none",
                     fontFamily: "sans-serif",
-                    height: "100%"
-                  }
-                }
+                    height: "100%",
+                  },
+                },
               }}
               value={state.textContent}
               placeholder="This is some content"
               onChange={(event) => {
                 dispatch({
                   type: MODAL_ACTIONS.UPDATE_TEXT_CONTENT,
-                  payload: { textContent: event.target.value }
+                  payload: { textContent: event.target.value },
                 });
               }}
             />
@@ -165,7 +172,9 @@ export default function ItemModal({ isOpen, onAction }) {
         <ModalButton kind={BUTTON_KIND.tertiary} onClick={onModalClose}>
           Cancel
         </ModalButton>
-        <ModalButton onClick={onAddItem}>Add</ModalButton>
+        <ModalButton onClick={handleSubmit}>
+          {mode === MODES.CREATE ? "Add" : "Update"}
+        </ModalButton>
       </ModalFooter>
     </Modal>
   );

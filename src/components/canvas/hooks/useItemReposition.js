@@ -7,7 +7,7 @@ import { ACTIONS } from "../../../constants";
 const REPOSITION_ACTIONS = {
   START_REPOSITION: "START_REPOSITION",
   END_REPOSITION: "END_REPOSITION",
-  CHANGE_POSITON: "CHANGE_POSITON"
+  CHANGE_POSITON: "CHANGE_POSITON",
 };
 
 const repositionReducer = (state, action) => {
@@ -22,7 +22,7 @@ const repositionReducer = (state, action) => {
         startX,
         startY,
         top,
-        left
+        left,
       };
     }
 
@@ -35,7 +35,7 @@ const repositionReducer = (state, action) => {
       return {
         ...state,
         deltaX,
-        deltaY
+        deltaY,
       };
     }
 
@@ -47,7 +47,7 @@ const repositionReducer = (state, action) => {
         top: top + deltaY,
         left: left + deltaX,
         deltaX: 0,
-        deltaY: 0
+        deltaY: 0,
       };
     }
 
@@ -58,7 +58,7 @@ const repositionReducer = (state, action) => {
 
 const useItemReposition = ({ item, onAction }) => {
   const [state, dispatch] = useReducer(repositionReducer, {
-    isDragging: false
+    isDragging: false,
   });
   const prevIsDragging = useRef(false);
   const { isDragging } = state;
@@ -72,8 +72,8 @@ const useItemReposition = ({ item, onAction }) => {
           startX: event.clientX,
           startY: event.clientY,
           left: item.left,
-          top: item.top
-        }
+          top: item.top,
+        },
       });
     },
     [item]
@@ -83,7 +83,7 @@ const useItemReposition = ({ item, onAction }) => {
     const onMouseMove = (event) => {
       dispatch({
         type: REPOSITION_ACTIONS.CHANGE_POSITON,
-        payload: { clientX: event.clientX, clientY: event.clientY }
+        payload: { clientX: event.clientX, clientY: event.clientY },
       });
     };
 
@@ -109,10 +109,12 @@ const useItemReposition = ({ item, onAction }) => {
       onAction({
         type: ACTIONS.UPDATE_ITEM,
         payload: {
-          top: state.top,
-          left: state.left,
-          id: item.id
-        }
+          item: {
+            top: state.top,
+            left: state.left,
+          },
+          id: item.id,
+        },
       });
     }
     prevIsDragging.current = state.isDragging;
